@@ -1,12 +1,40 @@
 using Pivotal.Web.Config.Transform.Buildpack;
 using System;
+using System.IO;
 using System.Xml;
 using Xunit;
 
 namespace IntegrationTests
 {
-    public class WebConfigTransformBuildpackTests
+    public class WebConfigTransformBuildpackTests : IDisposable
     {
+        public WebConfigTransformBuildpackTests()
+        {
+        }
+
+        public void Dispose()
+        {
+            File.Delete("web.config.orig");
+        }
+
+        [Fact]
+        public void WhenWebConfigIsTransformedSuccessfully()
+        {
+            // arrange
+            var bp = new WebConfigTransformBuildpack();
+
+            // act
+            bp.Run(new[] { "supply", "", "", "", "0" });
+
+            // assert
+            var xml = new XmlDocument();
+            xml.Load("web.config");
+
+            var transformedValue = xml.SelectSingleNode("/configuration/qux/quz");
+
+            Assert.NotNull(transformedValue);
+        }
+
         [Fact]
         public void WhenAppSettingsAreChangedSuccessfully()
         {
@@ -73,6 +101,19 @@ namespace IntegrationTests
             Assert.Equal(expectedValue, actualValue);
         }
 
-        
+        [Fact]
+        public void VerifyWebConfigBackupIsCreated()
+        {
+            //arrange
+            var bp = new WebConfigTransformBuildpack();
+
+            //act
+            bp.Run(new[] { "supply", "", "", "", "0" });
+
+
+            //assert 
+            Assert.True(File.Exists("web.config.orig"));
+
+        }
     }
 }
