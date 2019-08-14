@@ -14,6 +14,14 @@ namespace Pivotal.Web.Config.Transform.Buildpack
 {
     public class WebConfigTransformBuildpack : SupplyBuildpack
     {
+        IEnvironmentWrapper _environmentWrapper;
+        IBuildpackProcessor _buildpackProcessor;
+
+        internal WebConfigTransformBuildpack(IEnvironmentWrapper environmentWrapper, IBuildpackProcessor buildpackProcessor)
+        {
+            _environmentWrapper = environmentWrapper;
+            _buildpackProcessor = buildpackProcessor;
+        }
         
         protected override bool Detect(string buildPath)
         {
@@ -28,17 +36,18 @@ namespace Pivotal.Web.Config.Transform.Buildpack
 
             var webConfig = Path.Combine(buildPath, "web.config");
 
-            if (!File.Exists(webConfig))
+            if (File.Exists(webConfig))
             {
-                Console.WriteLine("-----> Web.config not detected, skipping further execution");
-                Environment.Exit(0);
+                ApplyTransformations(buildPath, webConfig);
+
+                Console.WriteLine("================================================================================");
+                Console.WriteLine("============== WebConfig Transform Buildpack execution completed ===============");
+                Console.WriteLine("================================================================================");
+                return;
             }
 
-            ApplyTransformations(buildPath, webConfig);
-
-            Console.WriteLine("================================================================================");
-            Console.WriteLine("============== WebConfig Transform Buildpack execution completed ===============");
-            Console.WriteLine("================================================================================");
+            Console.WriteLine("-----> Web.config not detected, skipping further execution");
+            _environmentWrapper.Exit(0);
         }
 
         private static void ApplyTransformations(string buildPath, string webConfig)
