@@ -39,7 +39,7 @@ In legacy ASP.Net applications, configuration are injected through web.config fi
 #### 2. Create app manifest  
 
 * Ensure your application has a pcf manifest file. If your application is in PCF already, you can create the manifest using the command `cf create-app-manifest [appname]`. Sample manifest below.  
-* Add an environemnt variable to the manifest for each config item that will be used to replace the tokenized values. Below is a sample added refering to the connection string example above.
+* Add an environment variable to the manifest for each config item that will be used to replace the tokenized values. Below is a sample added refering to the connection string example above.
 * Add a buildpack reference to the manifest (before the hwc buildpack) that will perform the token replacement on cf push action. Note: Please refer to https://github.com/cloudfoundry-community/web-config-transform-buildpack/releases to pull the latest version as appropriate. `XXX` refers to the version of buildpack.
 
 
