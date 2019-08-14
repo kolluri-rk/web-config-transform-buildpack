@@ -50,5 +50,29 @@ namespace IntegrationTests
 
             Assert.Equal(expectedValue, actualValue);
         }
+
+        [Fact]
+        public void WhenTokenizedValueIsChangedSuccessfully()
+        {
+            // arrange
+            const string expectedValue = "BP_Value1";
+
+            Environment.SetEnvironmentVariable("BP_Token1", expectedValue);
+
+            var bp = new WebConfigTransformBuildpack();
+
+            // act
+            bp.Run(new[] { "supply", "", "", "", "0" });
+
+            // assert
+            var xml = new XmlDocument();
+            xml.Load("web.config");
+
+            var actualValue = xml.SelectSingleNode("/configuration/foo/bar/@baz").Value;
+
+            Assert.Equal(expectedValue, actualValue);
+        }
+
+        
     }
 }
