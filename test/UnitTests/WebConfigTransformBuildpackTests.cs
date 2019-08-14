@@ -1,6 +1,6 @@
 using FakeItEasy;
-using NUnit.Framework;
 using Pivotal.Web.Config.Transform.Buildpack;
+using Xunit;
 
 namespace UnitTests
 {
@@ -9,14 +9,13 @@ namespace UnitTests
         IEnvironmentWrapper _fakeEnvironmentWrapper;
         IBuildpackProcessor _fakeBuildpackProcessor;
 
-        [SetUp]
-        public void Setup()
+        public WebConfigTransformBuildpackTests()
         {
             _fakeEnvironmentWrapper = A.Fake<IEnvironmentWrapper>();
             _fakeBuildpackProcessor = A.Fake<IBuildpackProcessor>();
         }
 
-        [Test]
+        [Fact]
         public void WhenWebConfigIsNotFound()
         {
             // arrange
@@ -29,8 +28,7 @@ namespace UnitTests
             A.CallTo(() => _fakeEnvironmentWrapper.Exit(0)).MustHaveHappenedOnceExactly();
         }
 
-        [Test]
-        [Ignore("WIP")]
+        [Fact(Skip = "WIP")]
         public void WhenTransformationIsAppliedSuccessfully()
         {
             // arrange
