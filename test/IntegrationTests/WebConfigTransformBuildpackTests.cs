@@ -28,5 +28,27 @@ namespace IntegrationTests
 
             Assert.Equal(expectedValue, actualValue);
         }
+
+        [Fact]
+        public void WhenConnectionStringsAreChangedSuccessfully()
+        {
+            // arrange
+            const string expectedValue = "BP_ConnectionStrings_Value1";
+
+            Environment.SetEnvironmentVariable("BP_ConnectionStrings_Key1", expectedValue);
+
+            var bp = new WebConfigTransformBuildpack();
+
+            // act
+            bp.Run(new[] { "supply", "", "", "", "0" });
+
+            // assert
+            var xml = new XmlDocument();
+            xml.Load("web.config");
+
+            var actualValue = xml.SelectSingleNode("/configuration/connectionStrings/add[@name='BP_ConnectionStrings_Key1']/@connectionString").Value;
+
+            Assert.Equal(expectedValue, actualValue);
+        }
     }
 }
