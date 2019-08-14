@@ -55,11 +55,11 @@ namespace Pivotal.Web.Config.Transform.Buildpack
 
             if (!File.Exists(webConfig + ".orig")) // backup original web.config as we're gonna transform into it's place
                 File.Move(webConfig, webConfig + ".orig");
-            doc.Save(webConfig);
 
             ApplyWebConfigTransform(environment, xdt, doc);
-            ApplyAppSettings(doc, config, webConfig);
-            ApplyConnectionStrings(doc, config, webConfig);
+            ApplyAppSettings(doc, config);
+            ApplyConnectionStrings(doc, config);
+            doc.Save(webConfig);
             PerformTokenReplacements(webConfig, config);
         }
 
@@ -100,7 +100,7 @@ namespace Pivotal.Web.Config.Transform.Buildpack
             File.WriteAllText(webConfig, webConfigContent);
         }
 
-        private static void ApplyConnectionStrings(XmlDocument doc, IConfigurationRoot config, string filename)
+        private static void ApplyConnectionStrings(XmlDocument doc, IConfigurationRoot config)
         {
             var connStr = doc.SelectNodes("/configuration/connectionStrings/add").OfType<XmlElement>();
 
@@ -119,11 +119,9 @@ namespace Pivotal.Web.Config.Transform.Buildpack
                     add.SetAttribute("connectionString", value);
                 }
             }
-
-            doc.Save(filename);
         }
 
-        private static void ApplyAppSettings(XmlDocument doc, IConfigurationRoot config, string filename)
+        private static void ApplyAppSettings(XmlDocument doc, IConfigurationRoot config)
         {
             var adds = doc.SelectNodes("/configuration/appSettings/add").OfType<XmlElement>();
 
@@ -141,8 +139,6 @@ namespace Pivotal.Web.Config.Transform.Buildpack
                     add.SetAttribute("value", value);
                 }
             }
-            doc.Save(filename);
-
         }
 
         private static void ApplyWebConfigTransform(string environment, string xdt, XmlDocument doc)
