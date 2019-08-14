@@ -8,5 +8,10 @@ namespace Pivotal.Web.Config.Transform.Buildpack
         {
             Environment.Exit(code);
         }
+
+        public string GetEnvironmentVariable(string variable)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

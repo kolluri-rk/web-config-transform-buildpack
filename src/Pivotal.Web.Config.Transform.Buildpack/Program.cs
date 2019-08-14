@@ -6,7 +6,7 @@ namespace Pivotal.Web.Config.Transform.Buildpack
     {
         static int Main(string[] args)
         {
-            return new WebConfigTransformBuildpack(new EnvironmentWrapper(), null).Run(args);
+            return new WebConfigTransformBuildpack(new EnvironmentWrapper(), null, null).Run(args);
         }
     }
 }

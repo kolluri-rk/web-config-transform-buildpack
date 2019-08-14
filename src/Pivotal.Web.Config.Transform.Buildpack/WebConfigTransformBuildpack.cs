@@ -1,26 +1,26 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
+using Steeltoe.Extensions.Configuration.ConfigServer;
+using System;
 using System.IO;
 using System.Linq;
 using System.Xml;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
-using Steeltoe.Extensions.Configuration.ConfigServer;
 
 namespace Pivotal.Web.Config.Transform.Buildpack
 {
     public class WebConfigTransformBuildpack : SupplyBuildpack
     {
         IEnvironmentWrapper _environmentWrapper;
-        IBuildpackProcessor _buildpackProcessor;
+        IFileWrapper _fileWrapper;
+        IConfigurationFactory _configurationFactory;
 
-        internal WebConfigTransformBuildpack(IEnvironmentWrapper environmentWrapper, IBuildpackProcessor buildpackProcessor)
+        internal WebConfigTransformBuildpack(IEnvironmentWrapper environmentWrapper, IFileWrapper fileWrapper, IConfigurationFactory configurationFactory)
         {
             _environmentWrapper = environmentWrapper;
-            _buildpackProcessor = buildpackProcessor;
+            _fileWrapper = fileWrapper;
+            _configurationFactory = configurationFactory;
         }
         
         protected override bool Detect(string buildPath)
@@ -36,7 +36,7 @@ namespace Pivotal.Web.Config.Transform.Buildpack
 
             var webConfig = Path.Combine(buildPath, "web.config");
 
-            if (File.Exists(webConfig))
+            if (_fileWrapper.Exists(webConfig))
             {
                 ApplyTransformations(buildPath, webConfig);
 
@@ -50,13 +50,13 @@ namespace Pivotal.Web.Config.Transform.Buildpack
             _environmentWrapper.Exit(0);
         }
 
-        private static void ApplyTransformations(string buildPath, string webConfig)
+        private void ApplyTransformations(string buildPath, string webConfig)
         {
-            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Release";
+            var environment = _environmentWrapper.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Release";
 
             Console.WriteLine($"-----> Using Environment: {environment}");
 
-            var config = GetConfiguration(environment);
+            var config = _configurationFactory.GetConfiguration(environment);
 
             var xdt = Path.Combine(buildPath, $"web.{environment}.config");
             var doc = new XmlDocument();
@@ -72,26 +72,6 @@ namespace Pivotal.Web.Config.Transform.Buildpack
             PerformTokenReplacements(webConfig, config);
         }
 
-        private static IConfigurationRoot GetConfiguration(string environment)
-        {
-            var configBuilder = new ConfigurationBuilder();
-
-            configBuilder.AddEnvironmentVariables();
-
-            if (IsConfigServerBound())
-            {
-                Console.WriteLine("-----> Config server binding found...");
-
-                configBuilder.AddConfigServer(environment,
-#pragma warning disable CS0618 // Type or member is obsolete
-                    new LoggerFactory(new[] { new ConsoleLoggerProvider((name, level) => { level = LogLevel.Information; return true; }, false) }));
-#pragma warning restore CS0618 // Type or member is obsolete
-            }
-            else
-                configBuilder.AddCloudFoundry();
-
-            return configBuilder.Build();
-        }
 
         private static void PerformTokenReplacements(string webConfig, IConfigurationRoot config)
         {
@@ -160,25 +140,5 @@ namespace Pivotal.Web.Config.Transform.Buildpack
             }
         }
 
-        private static bool IsConfigServerBound()
-        {
-            var configuration = new ConfigurationBuilder()
-                                        .AddCloudFoundry()
-                                        .Build();
-
-            var cfServicesOptions = new CloudFoundryServicesOptions(configuration);
-
-            foreach (var service in cfServicesOptions.ServicesList)
-            {
-                if (service.Label == "p-config-server" 
-                    || service.Label == "p.config-server" 
-                    || (service.Tags.Contains("spring-cloud") && service.Tags.Contains("configuration")))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
     }
 }
