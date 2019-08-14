@@ -59,7 +59,7 @@ env:
 
 
 ##### Note  
-> On any issues you face with the web-config-transform-buildpack, please raise an issue at https://github.com/cloudfoundry-community/web-config-transform-buildpack/issues.
+> Only put token environment variables in the manifest for testing purposes. Spring Cloud Config Server should be used for externalizing configuration settings.
 
 
 #### 3. Add web config transformations
@@ -100,6 +100,9 @@ Sample `web.Release.Config` with transformations
 </configuration>
 ```
 
+
+#### Note
+> For any issues you face with the web-config-transform-buildpack, please raise an issue at https://github.com/cloudfoundry-community/web-config-transform-buildpack/issues.
 
 
 ## Extra stuff (TBD)
