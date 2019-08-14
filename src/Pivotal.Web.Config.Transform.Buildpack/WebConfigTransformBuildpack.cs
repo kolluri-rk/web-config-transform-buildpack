@@ -58,7 +58,7 @@ namespace Pivotal.Web.Config.Transform.Buildpack
             doc.Save(webConfig);
 
             ApplyWebConfigTransform(environment, xdt, doc);
-            ApplyAppSettings(doc, config);
+            ApplyAppSettings(doc, config, webConfig);
             ApplyConnectionStrings(doc, config);
             PerformTokenReplacements(webConfig, config);
         }
@@ -121,7 +121,7 @@ namespace Pivotal.Web.Config.Transform.Buildpack
             }
         }
 
-        private static void ApplyAppSettings(XmlDocument doc, IConfigurationRoot config)
+        private static void ApplyAppSettings(XmlDocument doc, IConfigurationRoot config, string filename)
         {
             var adds = doc.SelectNodes("/configuration/appSettings/add").OfType<XmlElement>();
 
@@ -139,6 +139,8 @@ namespace Pivotal.Web.Config.Transform.Buildpack
                     add.SetAttribute("value", value);
                 }
             }
+            doc.Save(filename);
+
         }
 
         private static void ApplyWebConfigTransform(string environment, string xdt, XmlDocument doc)
