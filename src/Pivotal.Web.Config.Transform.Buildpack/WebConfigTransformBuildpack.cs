@@ -55,11 +55,11 @@ namespace Pivotal.Web.Config.Transform.Buildpack
 
             if (!File.Exists(webConfig + ".orig")) // backup original web.config as we're gonna transform into it's place
                 File.Move(webConfig, webConfig + ".orig");
-            doc.Save(webConfig);
 
             ApplyWebConfigTransform(environment, xdt, doc);
             ApplyAppSettings(doc, config);
             ApplyConnectionStrings(doc, config);
+            doc.Save(webConfig);
             PerformTokenReplacements(webConfig, config);
         }
 
@@ -163,7 +163,7 @@ namespace Pivotal.Web.Config.Transform.Buildpack
             {
                 if (service.Label == "p-config-server" 
                     || service.Label == "p.config-server" 
-                    || (service.Tags.Contains("spring-cloud") && service.Tags.Contains("configuration")))
+                    || (service.Tags != null && (service.Tags.Contains("spring-cloud") && service.Tags.Contains("configuration"))))
                 {
                     return true;
                 }
