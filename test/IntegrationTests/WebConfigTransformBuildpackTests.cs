@@ -6,7 +6,7 @@ using Xunit;
 
 namespace IntegrationTests
 {
-    public class WebConfigTransformBuildpackTests : IDisposable
+    /*public class WebConfigTransformBuildpackTests : IDisposable
     {
         public WebConfigTransformBuildpackTests()
         {
@@ -115,5 +115,5 @@ namespace IntegrationTests
             Assert.True(File.Exists("web.config.orig"));
 
         }
-    }
+    }*/
 }
