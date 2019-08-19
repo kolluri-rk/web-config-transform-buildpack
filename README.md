@@ -170,7 +170,7 @@ sampleapp-Production.yaml
 
 #### 6. Bind config service to app using manifest
 
-Bind config server to your app once config server service is created.
+Bind the config server to your app once the config server service is created. Add your config server to the `services` section as seen below:
 
 ```yaml
 ---
