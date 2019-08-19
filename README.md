@@ -125,7 +125,7 @@ A multi-environment, production-ready configuration can be achieved using share 
 1. Create a network accessible git repository for each application
 1. Create <YOUR_APPLICATION>.yaml file to have common settings across all environments
 1. Create <YOUR_APPLICATION>-< YOUR_APP_ENVIRONMENT>.yaml for each unique environment
-1. Specify your environment  with `ASPNETCORE_ENVIRONMENT` environment variable in the manifest file. e.g: `ASPNETCORE_ENVIRONMENT=Production`
+1. Specify your environment  with `ASPNETCORE_ENVIRONMENT` environment variable in the manifest file created in step 2. e.g: `ASPNETCORE_ENVIRONMENT=Production`
 
 ##### Sample Config Server yml files
 
