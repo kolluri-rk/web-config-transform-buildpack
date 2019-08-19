@@ -149,7 +149,8 @@ sampleapp-Production.yaml
 
 #### 5. Create service for Spring Cloud Config Server
 
-1. Make sure you have config server available in marketplace. 
+1. Make sure you have config server available in your CF marketplace. 
+  > NOTE: To check if you have this server, run `cf marketplace`. You should see `p.config-server` or `p-config-server` in this list. 
 
 1. Create a JSON file for config server setup (ex: config-server.json)
     ```json
