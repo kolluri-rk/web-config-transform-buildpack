@@ -155,7 +155,7 @@ sampleapp-Production.yaml
     ```json
     {
         "git" : { 
-            "uri": "https://github.com/YOUR_USERNAME/YOUR_APPREPO"
+            "uri": "https://github.com/YOUR_USERNAME/YOUR_CONFIG_REPO"
         }
 
     }
