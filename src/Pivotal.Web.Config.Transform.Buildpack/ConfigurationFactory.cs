@@ -47,7 +47,7 @@ namespace Pivotal.Web.Config.Transform.Buildpack
             {
                 if (service.Label == "p-config-server"
                     || service.Label == "p.config-server"
-                    || (service.Tags.Contains("spring-cloud") && service.Tags.Contains("configuration")))
+                    || (service.Tags != null && (service.Tags.Contains("spring-cloud") && service.Tags.Contains("configuration"))))
                 {
                     return true;
                 }
