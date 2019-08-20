@@ -2,7 +2,7 @@
 
 namespace Pivotal.Web.Config.Transform.Buildpack
 {
-    internal class EnvironmentWrapper : IEnvironmentWrapper
+    public class EnvironmentWrapper : IEnvironmentWrapper
     {
         public void Exit(int code)
         {
