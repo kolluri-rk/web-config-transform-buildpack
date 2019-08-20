@@ -6,10 +6,24 @@ using Xunit;
 
 namespace IntegrationTests
 {
-    /*public class WebConfigTransformBuildpackTests : IDisposable
+    public class WebConfigTransformBuildpackTests : IDisposable
     {
+
+        private readonly IEnvironmentWrapper _environmentWrapper;
+        private readonly IFileWrapper _fileWrapper;
+        private readonly IConfigurationFactory _configurationFactory;
+
+        private readonly WebConfigTransformBuildpack _bp;
+
         public WebConfigTransformBuildpackTests()
         {
+            _environmentWrapper = new EnvironmentWrapper();
+            _fileWrapper = new FileWrapper();
+            _configurationFactory = new ConfigurationFactory();
+
+            _bp = new WebConfigTransformBuildpack(_environmentWrapper, _fileWrapper, _configurationFactory);
+
+
         }
 
         public void Dispose()
@@ -21,10 +35,10 @@ namespace IntegrationTests
         public void WhenWebConfigIsTransformedSuccessfully()
         {
             // arrange
-            var bp = new WebConfigTransformBuildpack();
+            //var bp = new WebConfigTransformBuildpack(_environmentWrapper, _fileWrapper, _configurationFactory);
 
             // act
-            bp.Run(new[] { "supply", "", "", "", "0" });
+            _bp.Run(new[] { "supply", "", "", "", "0" });
 
             // assert
             var xml = new XmlDocument();
@@ -43,10 +57,9 @@ namespace IntegrationTests
 
             Environment.SetEnvironmentVariable("BP_AppSettings_Key1", expectedValue);
 
-            var bp = new WebConfigTransformBuildpack();
 
             // act
-            bp.Run(new[] { "supply", "", "", "", "0" });
+            _bp.Run(new[] { "supply", "", "", "", "0" });
 
             // assert
             var xml = new XmlDocument();
@@ -65,10 +78,9 @@ namespace IntegrationTests
 
             Environment.SetEnvironmentVariable("BP_ConnectionStrings_Key1", expectedValue);
 
-            var bp = new WebConfigTransformBuildpack();
 
             // act
-            bp.Run(new[] { "supply", "", "", "", "0" });
+            _bp.Run(new[] { "supply", "", "", "", "0" });
 
             // assert
             var xml = new XmlDocument();
@@ -87,10 +99,9 @@ namespace IntegrationTests
 
             Environment.SetEnvironmentVariable("BP_Token1", expectedValue);
 
-            var bp = new WebConfigTransformBuildpack();
 
             // act
-            bp.Run(new[] { "supply", "", "", "", "0" });
+            _bp.Run(new[] { "supply", "", "", "", "0" });
 
             // assert
             var xml = new XmlDocument();
@@ -105,15 +116,15 @@ namespace IntegrationTests
         public void VerifyWebConfigBackupIsCreated()
         {
             //arrange
-            var bp = new WebConfigTransformBuildpack();
+            //var bp = new WebConfigTransformBuildpack();
 
             //act
-            bp.Run(new[] { "supply", "", "", "", "0" });
+            _bp.Run(new[] { "supply", "", "", "", "0" });
 
 
             //assert 
             Assert.True(File.Exists("web.config.orig"));
 
         }
-    }*/
+    }
 }

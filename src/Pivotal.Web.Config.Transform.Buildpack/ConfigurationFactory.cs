@@ -10,8 +10,10 @@ using System.Text;
 
 namespace Pivotal.Web.Config.Transform.Buildpack
 {
-    class ConfigurationFactory
+    public class ConfigurationFactory : IConfigurationFactory
     {
+        public ConfigurationFactory() { }
+
         public IConfigurationRoot GetConfiguration(string environment)
         {
             var configBuilder = new ConfigurationBuilder();

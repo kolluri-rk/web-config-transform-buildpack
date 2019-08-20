@@ -16,7 +16,7 @@ namespace Pivotal.Web.Config.Transform.Buildpack
         IFileWrapper _fileWrapper;
         IConfigurationFactory _configurationFactory;
 
-        internal WebConfigTransformBuildpack(IEnvironmentWrapper environmentWrapper, IFileWrapper fileWrapper, IConfigurationFactory configurationFactory)
+        public WebConfigTransformBuildpack(IEnvironmentWrapper environmentWrapper, IFileWrapper fileWrapper, IConfigurationFactory configurationFactory)
         {
             _environmentWrapper = environmentWrapper;
             _fileWrapper = fileWrapper;

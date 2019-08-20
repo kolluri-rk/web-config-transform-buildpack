@@ -11,7 +11,7 @@ namespace Pivotal.Web.Config.Transform.Buildpack
 
         public string GetEnvironmentVariable(string variable)
         {
-            throw new NotImplementedException();
+            return Environment.GetEnvironmentVariable(variable);
         }
     }
 }
