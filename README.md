@@ -210,10 +210,30 @@ You should be able to find if the environment value is actually passed in, by lo
 ```
 
 
+#### Special Behavior for appSettings and connectionStrings
+This buildpack makes it possible to externalize appSettings and connectionString values in your Web.config without using tokenized values. In this case simply include the values in your yaml config files on your Github repository (`{YOUR-APP}.production.yml`, `YOUR-APP}.development.yml`, etc.
+
+sampleapp-Development.yaml
+```yaml
+appSettings:
+  Setting1: "development setting"
+ connectionStrings:
+   MyDB: "Data Source=devserver;Initial Catalog=mydb;User ID=xxxx;Password=xxxx"
+```
+
+sampleapp-Production.yaml
+```yaml
+appSettings:
+  Setting1: "production setting"
+ connectionStrings:
+   MyDB: "Data Source=prodserver;Initial Catalog=mydb;User ID=xxxx;Password=xxxx"
+```
+
+This buildpack can inject appSettings and connectionStrings values based on environment specific yaml config files even if replacement tokens are not present in Web.Release.Config file.  
+
 #### Note
 > For any issues you face with the web-config-transform-buildpack, please raise an issue at https://github.com/cloudfoundry-community/web-config-transform-buildpack/issues.
 
 
 ## Extra stuff (TBD)
 * Describe how to use separate config transform ie ASPNETCORE_ENVIRONMENT=<env> + Web.<env>.config
-* Describe optional special behavior for appSettings and connectionStrings
