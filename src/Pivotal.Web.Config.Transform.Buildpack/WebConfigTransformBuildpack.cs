@@ -100,7 +100,8 @@ namespace Pivotal.Web.Config.Transform.Buildpack
                 if (key == null)
                     continue;
 
-                var value = config[key];
+                //var value = config[key];
+                var value = config[$"connectionStrings:{key}"]; 
 
                 if (!string.IsNullOrEmpty(value))
                 {
@@ -120,7 +121,8 @@ namespace Pivotal.Web.Config.Transform.Buildpack
                 if (key == null)
                     continue;
 
-                var value = config[key];
+                //var value = config[key];
+                var value = config[$"appSettings:{key}"];
 
                 if (!string.IsNullOrEmpty(value))
                 {

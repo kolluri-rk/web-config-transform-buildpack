@@ -28,7 +28,12 @@ namespace IntegrationTests
 
         public void Dispose()
         {
-            File.Delete("web.config.orig");
+            //File.Delete("web.config.orig");
+            if (File.Exists("web.config.orig"))
+            {
+                File.Copy("web.config.orig", "web.config", true);
+                File.Delete("web.config.orig");
+            }
         }
 
         [Fact]
@@ -53,9 +58,9 @@ namespace IntegrationTests
         public void WhenAppSettingsAreChangedSuccessfully()
         {
             // arrange
-            const string expectedValue = "BP_AppSettings_Value1";
+            const string expectedValue = "BP_AppSettings_Value123";
 
-            Environment.SetEnvironmentVariable("BP_AppSettings_Key1", expectedValue);
+            Environment.SetEnvironmentVariable("appSettings:BP_AppSettings_Key1", expectedValue);
 
 
             // act
@@ -65,7 +70,7 @@ namespace IntegrationTests
             var xml = new XmlDocument();
             xml.Load("web.config");
 
-            var actualValue = xml.SelectSingleNode("/configuration/appSettings/add[@key='BP_AppSettings_Key1']/@value").Value;
+                    var actualValue = xml.SelectSingleNode("/configuration/appSettings/add[@key='BP_AppSettings_Key1']/@value").Value;
 
             Assert.Equal(expectedValue, actualValue);
         }
@@ -76,7 +81,7 @@ namespace IntegrationTests
             // arrange
             const string expectedValue = "BP_ConnectionStrings_Value1";
 
-            Environment.SetEnvironmentVariable("BP_ConnectionStrings_Key1", expectedValue);
+            Environment.SetEnvironmentVariable("connectionStrings:BP_ConnectionStrings_Key1", expectedValue);
 
 
             // act

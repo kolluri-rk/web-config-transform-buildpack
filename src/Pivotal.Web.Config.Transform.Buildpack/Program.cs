@@ -1,4 +1,5 @@
 using System;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Pivotal.Web.Config.Transform.Buildpack
 {
@@ -6,7 +7,17 @@ namespace Pivotal.Web.Config.Transform.Buildpack
     {
         static int Main(string[] args)
         {
-            return new WebConfigTransformBuildpack(new EnvironmentWrapper(), null, null).Run(args);
+            var serviceProvider = new ServiceCollection()
+                .AddSingleton<IEnvironmentWrapper, EnvironmentWrapper>()
+                .AddSingleton<IFileWrapper, FileWrapper>()
+                .AddSingleton<IConfigurationFactory, ConfigurationFactory>()
+                .AddSingleton<WebConfigTransformBuildpack>()
+                .BuildServiceProvider();
+
+            var buildpack = serviceProvider.GetService<WebConfigTransformBuildpack>();
+            return buildpack.Run(args);
+
+            //return new WebConfigTransformBuildpack(new EnvironmentWrapper(), new FileWrapper(), new ConfigurationFactory()).Run(args);
         }
     }
 }
