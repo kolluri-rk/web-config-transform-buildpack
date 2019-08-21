@@ -234,6 +234,7 @@ This buildpack can inject appSettings and connectionStrings values based on envi
 #### Note
 > For any issues you face with the web-config-transform-buildpack, please raise an issue at https://github.com/cloudfoundry-community/web-config-transform-buildpack/issues.
 
+A sample web application and walkthrough can be found [here](https://github.com/greenhouse-org/webconfig-example-app/blob/master/README.md)
 
 ## Extra stuff (TBD)
 * Describe how to use separate config transform ie ASPNETCORE_ENVIRONMENT=<env> + Web.<env>.config
