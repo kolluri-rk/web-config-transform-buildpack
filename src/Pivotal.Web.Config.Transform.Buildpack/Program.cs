@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace Pivotal.Web.Config.Transform.Buildpack
 {
@@ -23,7 +24,7 @@ namespace Pivotal.Web.Config.Transform.Buildpack
 
             var logger = serviceProvider.GetService<ILoggerFactory>().CreateLogger<Program>();
             logger.LogInformation("Resolved services and starting buildpack");
-
+            Console.WriteLine("Resolved services and starting buildpack");
 
             return buildpack.Run(args);
         }
