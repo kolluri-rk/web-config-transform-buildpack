@@ -6,7 +6,6 @@ Cloud Native Applications are expected to bring in configurations from external 
 
 In legacy ASP.Net applications, configuration settings are injected through Web.config files. As per cloud native principles, configuration should stay out of build artifacts. In this recipe we will use a custom buildpack which provides a solution to this problem by using token replacement during cf push staging.
 
-A sample web application and walkthrough can be found [here](https://github.com/greenhouse-org/webconfig-example-app/blob/master/README.md)
 
 ### High level steps
 
@@ -232,6 +231,9 @@ appSettings:
 ```
 
 This buildpack can inject appSettings and connectionStrings values based on environment specific yaml config files even if replacement tokens are not present in Web.Release.Config file.  
+
+### Sample Application & Walkthrough
+A sample web application and walkthrough can be found [here](https://github.com/greenhouse-org/webconfig-example-app/blob/master/README.md)
 
 #### Note
 > For any issues you face with the web-config-transform-buildpack, please raise an issue at https://github.com/cloudfoundry-community/web-config-transform-buildpack/issues.
