@@ -15,12 +15,14 @@ namespace Pivotal.Web.Config.Transform.Buildpack
         IEnvironmentWrapper _environmentWrapper;
         IFileWrapper _fileWrapper;
         IConfigurationFactory _configurationFactory;
+        IXmlDocumentWrapper _xmlDocumentWrapper;
 
-        public WebConfigTransformBuildpack(IEnvironmentWrapper environmentWrapper, IFileWrapper fileWrapper, IConfigurationFactory configurationFactory)
+        public WebConfigTransformBuildpack(IEnvironmentWrapper environmentWrapper, IFileWrapper fileWrapper, IConfigurationFactory configurationFactory, IXmlDocumentWrapper xmlDocumentWrapper)
         {
             _environmentWrapper = environmentWrapper;
             _fileWrapper = fileWrapper;
             _configurationFactory = configurationFactory;
+            _xmlDocumentWrapper = xmlDocumentWrapper;
         }
         
         protected override bool Detect(string buildPath)
@@ -58,12 +60,12 @@ namespace Pivotal.Web.Config.Transform.Buildpack
 
             var config = _configurationFactory.GetConfiguration(environment);
 
+            var doc = _xmlDocumentWrapper.CreateDocFromFile(webConfig);
             var xdt = Path.Combine(buildPath, $"web.{environment}.config");
-            var doc = new XmlDocument();
-            doc.Load(webConfig);
 
-            if (!File.Exists(webConfig + ".orig")) // backup original web.config as we're gonna transform into it's place
-                File.Move(webConfig, webConfig + ".orig");
+
+            if (!_fileWrapper.Exists(webConfig + ".orig")) // backup original web.config as we're gonna transform into it's place
+                _fileWrapper.Move(webConfig, webConfig + ".orig");
 
             ApplyWebConfigTransform(environment, xdt, doc);
             ApplyAppSettings(doc, config);

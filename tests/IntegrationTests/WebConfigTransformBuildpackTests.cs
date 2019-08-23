@@ -12,6 +12,7 @@ namespace IntegrationTests
         private readonly IEnvironmentWrapper _environmentWrapper;
         private readonly IFileWrapper _fileWrapper;
         private readonly IConfigurationFactory _configurationFactory;
+        private readonly IXmlDocumentWrapper _xmlDocumentWrapper;
 
         private readonly WebConfigTransformBuildpack _bp;
 
@@ -20,8 +21,9 @@ namespace IntegrationTests
             _environmentWrapper = new EnvironmentWrapper();
             _fileWrapper = new FileWrapper();
             _configurationFactory = new ConfigurationFactory();
+            _xmlDocumentWrapper = new XmlDocumentWrapper();
 
-            _bp = new WebConfigTransformBuildpack(_environmentWrapper, _fileWrapper, _configurationFactory);
+            _bp = new WebConfigTransformBuildpack(_environmentWrapper, _fileWrapper, _configurationFactory, _xmlDocumentWrapper);
 
 
         }
@@ -117,7 +119,7 @@ namespace IntegrationTests
             Assert.Equal(expectedValue, actualValue);
         }
 
-        [Fact]
+        [Fact(Skip = "integration tests now clean up original file; this will be unit tested")]
         public void VerifyWebConfigBackupIsCreated()
         {
             //arrange

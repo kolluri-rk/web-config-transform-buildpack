@@ -10,5 +10,9 @@ namespace Pivotal.Web.Config.Transform.Buildpack
         {
             return System.IO.File.Exists(file);
         }
+
+        public void Move(string sourceFileName, string destFilename)
+        {
+        }
     }
 }

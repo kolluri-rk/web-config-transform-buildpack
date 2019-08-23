@@ -7,7 +7,7 @@ namespace Pivotal.Web.Config.Transform.Buildpack
     public interface IFileWrapper
     {
         bool Exists(string file);
-    
 
+        void Move(string sourceFileName, string destFileName);
     }
 }
