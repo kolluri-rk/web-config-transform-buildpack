@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Pivotal.Web.Config.Transform.Buildpack;
 using System.IO;
 using Xunit;
+using System.Xml;
 
 namespace UnitTests
 {
@@ -12,6 +13,7 @@ namespace UnitTests
         IFileWrapper _fakeFileWrapper;
         IConfigurationFactory _fakeConfigurationFactory;
         IXmlDocumentWrapper _fakeWebConfigDocument;
+        IWebConfigTransformer _fakeWebConfigTransformer;
 
         public WebConfigTransformBuildpackTests()
         {
@@ -19,14 +21,14 @@ namespace UnitTests
             _fakeFileWrapper = A.Fake<IFileWrapper>();
             _fakeConfigurationFactory = A.Fake<IConfigurationFactory>();
             _fakeWebConfigDocument = A.Fake<IXmlDocumentWrapper>();
+            _fakeWebConfigTransformer = A.Fake<IWebConfigTransformer>();
 
         }
-
         [Fact]
         public void WhenWebConfigIsNotFound()
         {
             // arrange
-            var bp = new WebConfigTransformBuildpack(_fakeEnvironmentWrapper, _fakeFileWrapper, null, null);
+            var bp = new WebConfigTransformBuildpack(_fakeEnvironmentWrapper, _fakeFileWrapper, null, null, null);
 
             // act
             bp.Run(new[] { "supply", "path\\that\\does\\not\\exist", "", "", "0" });
@@ -40,7 +42,7 @@ namespace UnitTests
         public void WhenASPNETCORE_ENVIRONMENTEnvVariableDefined()
         {
             // arrange
-            var bp = new WebConfigTransformBuildpack(_fakeEnvironmentWrapper, _fakeFileWrapper, _fakeConfigurationFactory, _fakeWebConfigDocument);
+            var bp = new WebConfigTransformBuildpack(_fakeEnvironmentWrapper, _fakeFileWrapper, _fakeConfigurationFactory, _fakeWebConfigDocument, _fakeWebConfigTransformer);
             const string configPath = "example\\path";
             A.CallTo(() => _fakeFileWrapper.Exists(Path.Combine(configPath, "web.config"))).Returns(true);
             A.CallTo(() => _fakeEnvironmentWrapper.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")).Returns("definedValue");
@@ -57,7 +59,7 @@ namespace UnitTests
         public void WhenASPNETCORE_ENVIRONMENTEnvVariableNotDefined()
         {
             // arrange
-            var bp = new WebConfigTransformBuildpack(_fakeEnvironmentWrapper, _fakeFileWrapper, _fakeConfigurationFactory, _fakeWebConfigDocument);
+            var bp = new WebConfigTransformBuildpack(_fakeEnvironmentWrapper, _fakeFileWrapper, _fakeConfigurationFactory, _fakeWebConfigDocument, _fakeWebConfigTransformer);
             const string configPath = "example\\path";
             A.CallTo(() => _fakeFileWrapper.Exists(Path.Combine(configPath, "web.config"))).Returns(true);
             A.CallTo(() => _fakeEnvironmentWrapper.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")).Returns(null);
@@ -74,7 +76,7 @@ namespace UnitTests
         public void WhenWebConfigOriginalFileAlreadyExists()
         {
             // arrange
-            var bp = new WebConfigTransformBuildpack(_fakeEnvironmentWrapper, _fakeFileWrapper, _fakeConfigurationFactory, _fakeWebConfigDocument);
+            var bp = new WebConfigTransformBuildpack(_fakeEnvironmentWrapper, _fakeFileWrapper, _fakeConfigurationFactory, _fakeWebConfigDocument, _fakeWebConfigTransformer);
             const string configPath = "example\\path";
             const string configFileName = "web.config";
             string configFilepath = Path.Combine(configPath, configFileName);
@@ -96,7 +98,7 @@ namespace UnitTests
         public void WhenWebConfigOriginalFileDoesNotExist_BackupIsCreated()
         {
             // arrange
-            var bp = new WebConfigTransformBuildpack(_fakeEnvironmentWrapper, _fakeFileWrapper, _fakeConfigurationFactory, _fakeWebConfigDocument);
+            var bp = new WebConfigTransformBuildpack(_fakeEnvironmentWrapper, _fakeFileWrapper, _fakeConfigurationFactory, _fakeWebConfigDocument, _fakeWebConfigTransformer);
             const string configPath = "example\\path";
             const string configFileName = "web.config";
             string configFilepath = Path.Combine(configPath, configFileName);
@@ -115,13 +117,18 @@ namespace UnitTests
         }
 
 
-        [Fact]
+        [Fact(Skip = "WIP")]
         public void WhenWebConfigIsFound()
         {
             // arrange
-            var bp = new WebConfigTransformBuildpack(_fakeEnvironmentWrapper, _fakeFileWrapper, _fakeConfigurationFactory, _fakeWebConfigDocument);
+            var bp = new WebConfigTransformBuildpack(_fakeEnvironmentWrapper, _fakeFileWrapper, _fakeConfigurationFactory, _fakeWebConfigDocument, _fakeWebConfigTransformer);
             const string configPath = "example\\path";
             A.CallTo(() => _fakeFileWrapper.Exists(Path.Combine(configPath, "web.config"))).Returns(true);
+
+            string environment = "exampleEnv";
+            XmlDocument doc = new XmlDocument();
+            A.CallTo(() => _fakeWebConfigDocument.CreateDocFromFile("webConfigFilename")).Returns(new XmlDocument());
+            A.CallTo(() => _fakeEnvironmentWrapper.GetEnvironmentVariable(A<string>._)).Returns(environment);
 
             // act
             bp.Run(new[] { "supply", configPath, "", "", "0" });
@@ -130,14 +137,11 @@ namespace UnitTests
             //A.CallTo(() => _fakeEnvironmentWrapper.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")).MustHaveHappenedOnceExactly();
             //A.CallTo(() => _fakeConfigurationFactory.GetConfiguration(A<string>._)).MustHaveHappenedOnceExactly();
             A.CallTo(() => _fakeWebConfigDocument.CreateDocFromFile(Path.Combine(configPath, "web.config"))).MustHaveHappenedOnceExactly();
+            A.CallTo(() => _fakeWebConfigTransformer.ApplyWebConfigTransform(environment, Path.Combine(configPath, $"web.{environment}.config"), new XmlDocument())).MustHaveHappenedOnceExactly();
+            //add tests: a call to ApplyAppSettings(), ApplyConnectionStrings(), doc.Save() and PerformTokenReplacement() must have happened
+            
         }
+
     }
 }
 
-/*Questions
-1. If we the tests cover it, do we need a fake?
-2. Do we need to assert that a call was made if it doesn't matter? 
-3. Add to webConfigNotFound -- should we test that certain methods weren't called? 
-4. DocumentWrapper - how to test 
-5. Test by unit test, or by one happy path? (like filebackup)
- */

@@ -23,7 +23,7 @@ namespace IntegrationTests
             _configurationFactory = new ConfigurationFactory();
             _xmlDocumentWrapper = new XmlDocumentWrapper();
 
-            _bp = new WebConfigTransformBuildpack(_environmentWrapper, _fileWrapper, _configurationFactory, _xmlDocumentWrapper);
+            _bp = new WebConfigTransformBuildpack(_environmentWrapper, _fileWrapper, _configurationFactory, _xmlDocumentWrapper, null);
 
 
         }

@@ -16,13 +16,15 @@ namespace Pivotal.Web.Config.Transform.Buildpack
         IFileWrapper _fileWrapper;
         IConfigurationFactory _configurationFactory;
         IXmlDocumentWrapper _xmlDocumentWrapper;
+        IWebConfigTransformer _webConfigTransformer;
 
-        public WebConfigTransformBuildpack(IEnvironmentWrapper environmentWrapper, IFileWrapper fileWrapper, IConfigurationFactory configurationFactory, IXmlDocumentWrapper xmlDocumentWrapper)
+        public WebConfigTransformBuildpack(IEnvironmentWrapper environmentWrapper, IFileWrapper fileWrapper, IConfigurationFactory configurationFactory, IXmlDocumentWrapper xmlDocumentWrapper, IWebConfigTransformer webConfigTransformer)
         {
             _environmentWrapper = environmentWrapper;
             _fileWrapper = fileWrapper;
             _configurationFactory = configurationFactory;
             _xmlDocumentWrapper = xmlDocumentWrapper;
+            _webConfigTransformer = webConfigTransformer;
         }
         
         protected override bool Detect(string buildPath)
@@ -67,15 +69,20 @@ namespace Pivotal.Web.Config.Transform.Buildpack
             if (!_fileWrapper.Exists(webConfig + ".orig")) // backup original web.config as we're gonna transform into it's place
                 _fileWrapper.Move(webConfig, webConfig + ".orig");
 
-            ApplyWebConfigTransform(environment, xdt, doc);
-            ApplyAppSettings(doc, config);
+            doc = _webConfigTransformer.ApplyWebConfigTransform(environment, xdt, doc);
+            doc = _webConfigTransformer.ApplyAppSettings(doc, config);
+            doc = _webConfigTransformer.ApplyConnectionStrings(doc, config);
+            _xmlDocumentWrapper.WriteFileFromDoc(doc, webConfig);
+            _webConfigTransformer.PerformTokenReplacements(webConfig, config);
+
+            /*ApplyAppSettings(doc, config);
             ApplyConnectionStrings(doc, config);
             doc.Save(webConfig);
-            PerformTokenReplacements(webConfig, config);
+            PerformTokenReplacements(webConfig, config);*/
         }
 
 
-        private static void PerformTokenReplacements(string webConfig, IConfigurationRoot config)
+        /*private static void PerformTokenReplacements(string webConfig, IConfigurationRoot config)
         {
             var webConfigContent = File.ReadAllText(webConfig);
             foreach (var configEntry in config.AsEnumerable())
@@ -140,7 +147,7 @@ namespace Pivotal.Web.Config.Transform.Buildpack
                 var transform = new Microsoft.Web.XmlTransform.XmlTransformation(xdt);
                 transform.Apply(doc);
             }
-        }
+        }*/
 
     }
 }
