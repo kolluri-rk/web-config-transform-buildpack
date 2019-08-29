@@ -31,15 +31,15 @@ namespace Pivotal.Web.Config.Transform.Buildpack
 
             _configFile = configFile;
             _configXmlDoc = _xmlDocumentWrapper.CreateXmlDocFromFile(_configFile);
+            BackupConfig();
         }
-
 
         public void Dispose()
         {
             _xmlDocumentWrapper.SaveXmlDocAsFile(_configXmlDoc, _configFile);
         }
 
-        public void BackupConfig()
+        private void BackupConfig()
         {
             _fileWrapper.Copy(_configFile, $"{_configFile}.orig");
         }

@@ -2,8 +2,6 @@
 {
     public interface IWebConfigWriter
     {
-        void BackupConfig();
-
         void SetAppSetting(string key, string value);
 
         void SetConnectionString(string name, string connectionString);

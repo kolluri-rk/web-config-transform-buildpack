@@ -31,7 +31,6 @@ namespace IntegrationTests
         {
             // arrange
             const string expectedValue = "BP_AppSettings_Value123";
-
             Environment.SetEnvironmentVariable("appSettings:BP_AppSettings_Key1", expectedValue);
 
 
@@ -73,9 +72,7 @@ namespace IntegrationTests
         {
             // arrange
             const string expectedValue = "BP_Value1";
-
             Environment.SetEnvironmentVariable("BP_Token1", expectedValue);
-
 
             // act
             _bp.Run(new[] { "supply", "", "", "", "0" });
@@ -89,19 +86,15 @@ namespace IntegrationTests
             Assert.Equal(expectedValue, actualValue);
         }
 
-        [Fact(Skip = "integration tests now clean up original file; this will be unit tested")]
+        [Fact]
         public void VerifyWebConfigBackupIsCreated()
         {
-            //arrange
-            //var bp = new WebConfigTransformBuildpack();
-
             //act
             _bp.Run(new[] { "supply", "", "", "", "0" });
 
 
             //assert 
             Assert.True(File.Exists("web.config.orig"));
-
         }
     }
 }

@@ -39,7 +39,7 @@ namespace UnitTests
         {
             _fileWrapperMock.Setup(f => f.Exists(It.IsAny<string>())).Returns(true);
 
-            _writer = new Pivotal.Web.Config.Transform.Buildpack.WebConfigManager(
+            _writer = new WebConfigManager(
                 _fileWrapperMock.Object,
                 _xmlDocumentWrapperMock.Object,
                 WEB_CONFIG_FILE_NAME);
@@ -48,11 +48,14 @@ namespace UnitTests
         }
 
         [Fact]
-        public void BackupConfig_Should_CallFileWrapperCopy()
+        public void When_WebConfigExists_Constructor_Should_BackupConfigFile()
         {
-            LoadWebConfigAsXmlDocument();
+            _fileWrapperMock.Setup(f => f.Exists(It.IsAny<string>())).Returns(true);
 
-            _writer.BackupConfig();
+            _writer = new WebConfigManager(
+                _fileWrapperMock.Object,
+                _xmlDocumentWrapperMock.Object,
+                WEB_CONFIG_FILE_NAME);
 
             _fileWrapperMock.Verify(f => f.Copy(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
         }
@@ -196,7 +199,7 @@ namespace UnitTests
             _fileWrapperMock.Setup(f => f.Exists(It.IsAny<string>())).Returns(true);
             _xmlDocumentWrapperMock.Setup(f => f.CreateXmlDocFromFile(It.IsAny<string>())).Returns(xmldoc);
 
-            _writer = new Pivotal.Web.Config.Transform.Buildpack.WebConfigManager(
+            _writer = new WebConfigManager(
                 _fileWrapperMock.Object,
                 _xmlDocumentWrapperMock.Object,
                 WEB_CONFIG_FILE_NAME);
