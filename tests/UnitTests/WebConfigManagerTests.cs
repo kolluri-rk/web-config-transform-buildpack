@@ -12,7 +12,7 @@ namespace UnitTests
     {
         private Mock<IFileWrapper> _fileWrapperMock;
         private Mock<IXmlDocumentWrapper> _xmlDocumentWrapperMock;
-        private Pivotal.Web.Config.Transform.Buildpack.WebConfigManager _writer;
+        private WebConfigManager _writer;
         private const string WEB_CONFIG_FILE_NAME = "web.config";
 
         public WebConfigManagerTests()

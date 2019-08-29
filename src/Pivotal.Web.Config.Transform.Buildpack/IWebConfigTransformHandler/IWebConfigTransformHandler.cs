@@ -1,6 +1,6 @@
 ﻿namespace Pivotal.Web.Config.Transform.Buildpack
 {
-    public interface IWebConfigTransformStartup
+    public interface IWebConfigTransformHandler
     {
         void CopyExternalAppSettings(IWebConfigWriter webConfigWriter);
 

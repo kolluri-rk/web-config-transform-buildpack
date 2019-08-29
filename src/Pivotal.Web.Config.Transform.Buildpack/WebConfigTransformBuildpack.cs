@@ -55,11 +55,11 @@ namespace Pivotal.Web.Config.Transform.Buildpack
                 Console.WriteLine($"-----> Using Environment: {environment}");
                 var config = _configurationFactory.GetConfiguration(environment);
 
-                var startup = new WebConfigTransformStartup(config, webConfigManager);
+                var transform = new WebConfigTransformHandler(config, webConfigManager);
 
-                startup.CopyExternalAppSettings(webConfigManager);
-                startup.CopyExternalConnectionStrings(webConfigManager);
-                startup.CopyExternalTokens(webConfigManager);
+                transform.CopyExternalAppSettings(webConfigManager);
+                transform.CopyExternalConnectionStrings(webConfigManager);
+                transform.CopyExternalTokens(webConfigManager);
             }
         }
     }

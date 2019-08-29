@@ -3,12 +3,12 @@ using System;
 
 namespace Pivotal.Web.Config.Transform.Buildpack
 {
-    public class WebConfigTransformStartup : IWebConfigTransformStartup
+    public class WebConfigTransformHandler : IWebConfigTransformHandler
     {
         private readonly IConfigurationRoot _config;
         private readonly IWebConfigReader _webConfigReader;
 
-        public WebConfigTransformStartup(
+        public WebConfigTransformHandler(
             IConfigurationRoot config,
             IWebConfigReader webConfigReader)
         {

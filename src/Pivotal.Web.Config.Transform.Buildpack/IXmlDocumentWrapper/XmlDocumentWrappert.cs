@@ -5,13 +5,6 @@ namespace Pivotal.Web.Config.Transform.Buildpack
 {
     public class XmlDocumentWrapper : IXmlDocumentWrapper
     {
-        public XmlDocument CreateDocFromFile(string filename)
-        {
-            var doc = new XmlDocument();
-            doc.Load(filename);
-            return doc;
-        }
-
         public XmlDocument CreateXmlDocFromFile(string filename)
         {
             var doc = new XmlDocument();
