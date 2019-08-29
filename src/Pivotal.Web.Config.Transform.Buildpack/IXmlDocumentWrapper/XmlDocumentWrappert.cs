@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.IO;
 using System.Xml;
 
 namespace Pivotal.Web.Config.Transform.Buildpack
@@ -11,10 +11,39 @@ namespace Pivotal.Web.Config.Transform.Buildpack
             doc.Load(filename);
             return doc;
         }
-        public XmlDocument WriteFileFromDoc(XmlDocument doc, string filename)
+
+        public XmlDocument CreateXmlDocFromFile(string filename)
+        {
+            var doc = new XmlDocument();
+            doc.Load(filename);
+            return doc;
+        }
+
+        public void SaveXmlDocAsFile(XmlDocument doc, string filename)
         {
             doc.Save(filename);
-            return doc; 
         }
+
+        public string ConvertXmlDocToString(XmlDocument doc)
+        {
+            using (var stringWriter = new StringWriter())
+            { 
+                using (var xmlTextWriter = XmlWriter.Create(stringWriter))
+                {
+                    doc.WriteTo(xmlTextWriter);
+                    xmlTextWriter.Flush();
+                    return stringWriter.GetStringBuilder().ToString();
+                }
+            }
+        }
+
+        public XmlDocument CreateXmlDocFromString(string xmlData)
+        {
+            var doc = new XmlDocument();
+            doc.LoadXml(xmlData);
+            return doc;
+        }
+
+
     }
 }

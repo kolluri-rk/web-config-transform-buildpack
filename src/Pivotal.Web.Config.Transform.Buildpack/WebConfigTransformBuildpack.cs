@@ -13,20 +13,22 @@ namespace Pivotal.Web.Config.Transform.Buildpack
     public class WebConfigTransformBuildpack : SupplyBuildpack
     {
         IEnvironmentWrapper _environmentWrapper;
-        IFileWrapper _fileWrapper;
         IConfigurationFactory _configurationFactory;
+        IFileWrapper _fileWrapper;
         IXmlDocumentWrapper _xmlDocumentWrapper;
-        IWebConfigTransformer _webConfigTransformer;
 
-        public WebConfigTransformBuildpack(IEnvironmentWrapper environmentWrapper, IFileWrapper fileWrapper, IConfigurationFactory configurationFactory, IXmlDocumentWrapper xmlDocumentWrapper, IWebConfigTransformer webConfigTransformer)
+        public WebConfigTransformBuildpack(
+            IEnvironmentWrapper environmentWrapper, 
+            IConfigurationFactory configurationFactory,
+            IFileWrapper fileWrapper,
+            IXmlDocumentWrapper xmlDocumentWrapper)
         {
             _environmentWrapper = environmentWrapper;
-            _fileWrapper = fileWrapper;
             _configurationFactory = configurationFactory;
+            _fileWrapper = fileWrapper;
             _xmlDocumentWrapper = xmlDocumentWrapper;
-            _webConfigTransformer = webConfigTransformer;
         }
-        
+
         protected override bool Detect(string buildPath)
         {
             return false;
@@ -38,116 +40,28 @@ namespace Pivotal.Web.Config.Transform.Buildpack
             Console.WriteLine("=============== WebConfig Transform Buildpack execution started ================");
             Console.WriteLine("================================================================================");
 
-            var webConfig = Path.Combine(buildPath, "web.config");
+            ApplyTransformations(Path.Combine(buildPath, "web.config"));
 
-            if (_fileWrapper.Exists(webConfig))
-            {
-                ApplyTransformations(buildPath, webConfig);
-
-                Console.WriteLine("================================================================================");
-                Console.WriteLine("============== WebConfig Transform Buildpack execution completed ===============");
-                Console.WriteLine("================================================================================");
-                return;
-            }
-
-            Console.WriteLine("-----> Web.config not detected, skipping further execution");
-            _environmentWrapper.Exit(0);
+            Console.WriteLine("================================================================================");
+            Console.WriteLine("============== WebConfig Transform Buildpack execution completed ===============");
+            Console.WriteLine("================================================================================");
         }
 
-        private void ApplyTransformations(string buildPath, string webConfig)
+        private void ApplyTransformations(string webConfig)
         {
-            var environment = _environmentWrapper.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Release";
-
-            Console.WriteLine($"-----> Using Environment: {environment}");
-
-            var config = _configurationFactory.GetConfiguration(environment);
-
-            var doc = _xmlDocumentWrapper.CreateDocFromFile(webConfig);
-            var xdt = Path.Combine(buildPath, $"web.{environment}.config");
-
-
-            if (!_fileWrapper.Exists(webConfig + ".orig")) // backup original web.config as we're gonna transform into it's place
-                _fileWrapper.Move(webConfig, webConfig + ".orig");
-
-            doc = _webConfigTransformer.ApplyWebConfigTransform(environment, xdt, doc);
-            doc = _webConfigTransformer.ApplyAppSettings(doc, config);
-            doc = _webConfigTransformer.ApplyConnectionStrings(doc, config);
-            _xmlDocumentWrapper.WriteFileFromDoc(doc, webConfig);
-            _webConfigTransformer.PerformTokenReplacements(webConfig, config);
-
-            /*ApplyAppSettings(doc, config);
-            ApplyConnectionStrings(doc, config);
-            doc.Save(webConfig);
-            PerformTokenReplacements(webConfig, config);*/
-        }
-
-
-        /*private static void PerformTokenReplacements(string webConfig, IConfigurationRoot config)
-        {
-            var webConfigContent = File.ReadAllText(webConfig);
-            foreach (var configEntry in config.AsEnumerable())
+            using (var webConfigManager = new WebConfigManager(_fileWrapper, _xmlDocumentWrapper, webConfig))
             {
-                var replaceToken = "#{" + configEntry.Key + "}";
+                var environment = _environmentWrapper.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Release";
+                Console.WriteLine($"-----> Using Environment: {environment}");
+                var config = _configurationFactory.GetConfiguration(environment);
 
-                if (webConfigContent.Contains(replaceToken))
-                {
-                    Console.WriteLine($"-----> Replacing token `{replaceToken}` in web.config");
-                    webConfigContent = webConfigContent.Replace(replaceToken, configEntry.Value);
-                }
-            }
-            File.WriteAllText(webConfig, webConfigContent);
-        }
+                var startup = new WebConfigTransformStartup(config, webConfigManager);
 
-        private static void ApplyConnectionStrings(XmlDocument doc, IConfigurationRoot config)
-        {
-            var connStr = doc.SelectNodes("/configuration/connectionStrings/add").OfType<XmlElement>();
-
-            foreach (var add in connStr)
-            {
-                var key = add.GetAttribute("name");
-
-                if (key == null)
-                    continue;
-
-                var value = config[$"connectionStrings:{key}"];
-
-                if (!string.IsNullOrEmpty(value))
-                {
-                    Console.WriteLine($"-----> Replacing connectionString for matching connectionString name `{key}` in web.config");
-                    add.SetAttribute("connectionString", value);
-                }
+                startup.CopyExternalAppSettings(webConfigManager);
+                startup.CopyExternalConnectionStrings(webConfigManager);
+                startup.CopyExternalTokens(webConfigManager);
             }
         }
-
-        private static void ApplyAppSettings(XmlDocument doc, IConfigurationRoot config)
-        {
-            var adds = doc.SelectNodes("/configuration/appSettings/add").OfType<XmlElement>();
-
-            foreach (var add in adds)
-            {
-                var key = add.GetAttribute("key");
-                if (key == null)
-                    continue;
-
-                var value = config[$"appSettings:{key}"];
-
-                if (!string.IsNullOrEmpty(value))
-                {
-                    Console.WriteLine($"-----> Replacing value for matching appSetting key `{key}` in web.config");
-                    add.SetAttribute("value", value);
-                }
-            }
-        }
-
-        private static void ApplyWebConfigTransform(string environment, string xdt, XmlDocument doc)
-        {
-            if (!string.IsNullOrEmpty(environment) && File.Exists(xdt))
-            {
-                Console.WriteLine($"-----> Applying {xdt} transform to web.config");
-                var transform = new Microsoft.Web.XmlTransform.XmlTransformation(xdt);
-                transform.Apply(doc);
-            }
-        }*/
-
     }
+        
 }

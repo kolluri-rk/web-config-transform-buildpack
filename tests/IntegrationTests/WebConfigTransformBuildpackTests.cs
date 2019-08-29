@@ -9,51 +9,21 @@ namespace IntegrationTests
     public class WebConfigTransformBuildpackTests : IDisposable
     {
 
-        private readonly IEnvironmentWrapper _environmentWrapper;
-        private readonly IFileWrapper _fileWrapper;
-        private readonly IConfigurationFactory _configurationFactory;
-        private readonly IXmlDocumentWrapper _xmlDocumentWrapper;
-
         private readonly WebConfigTransformBuildpack _bp;
 
         public WebConfigTransformBuildpackTests()
         {
-            _environmentWrapper = new EnvironmentWrapper();
-            _fileWrapper = new FileWrapper();
-            _configurationFactory = new ConfigurationFactory();
-            _xmlDocumentWrapper = new XmlDocumentWrapper();
-
-            _bp = new WebConfigTransformBuildpack(_environmentWrapper, _fileWrapper, _configurationFactory, _xmlDocumentWrapper, null);
-
+            _bp = Program.GetBuildpackInstance();
 
         }
 
         public void Dispose()
         {
-            //File.Delete("web.config.orig");
             if (File.Exists("web.config.orig"))
             {
                 File.Copy("web.config.orig", "web.config", true);
                 File.Delete("web.config.orig");
             }
-        }
-
-        [Fact]
-        public void WhenWebConfigIsTransformedSuccessfully()
-        {
-            // arrange
-            //var bp = new WebConfigTransformBuildpack(_environmentWrapper, _fileWrapper, _configurationFactory);
-
-            // act
-            _bp.Run(new[] { "supply", "", "", "", "0" });
-
-            // assert
-            var xml = new XmlDocument();
-            xml.Load("web.config");
-
-            var transformedValue = xml.SelectSingleNode("/configuration/qux/quz");
-
-            Assert.NotNull(transformedValue);
         }
 
         [Fact]
